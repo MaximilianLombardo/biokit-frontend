@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { FileText, HelpCircle, MoreHorizontal, Plus, Settings, Trash } from 'lucide-react'
+import { Edit, FileText, HelpCircle, MoreHorizontal, Plus, Settings, Trash } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
@@ -31,11 +32,13 @@ import { SidebarControl } from './components/sidebar-control/sidebar-control'
 export function BiokitSidebar() {
   const router = useRouter()
   const pathname = usePathname()
-  const { workflows, activeWorkflowId, createWorkflow, setActiveWorkflow, deleteWorkflow } = useLocalWorkflowRegistry()
+  const { workflows, activeWorkflowId, createWorkflow, setActiveWorkflow, deleteWorkflow, updateWorkflow } = useLocalWorkflowRegistry()
   const { mode, isExpanded } = useSidebarStore()
   const [isHovered, setIsHovered] = useState(false)
   const [workflowToDelete, setWorkflowToDelete] = useState<{ id: string; name: string } | null>(null)
   const [hoveredWorkflowId, setHoveredWorkflowId] = useState<string | null>(null)
+  const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState('')
 
   // Calculate if sidebar should be collapsed
   const isCollapsed = mode === 'collapsed' || (mode === 'hover' && !isHovered)
@@ -88,6 +91,38 @@ export function BiokitSidebar() {
     }
 
     setWorkflowToDelete(null)
+  }
+
+  // Handle starting edit mode
+  const handleStartEdit = (workflowId: string, currentName: string) => {
+    setEditingWorkflowId(workflowId)
+    setEditingName(currentName)
+  }
+
+  // Handle saving the edited name
+  const handleSaveEdit = () => {
+    if (editingWorkflowId && editingName.trim()) {
+      updateWorkflow(editingWorkflowId, { name: editingName.trim() })
+    }
+    setEditingWorkflowId(null)
+    setEditingName('')
+  }
+
+  // Handle canceling edit
+  const handleCancelEdit = () => {
+    setEditingWorkflowId(null)
+    setEditingName('')
+  }
+
+  // Handle key press in edit mode
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSaveEdit()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      handleCancelEdit()
+    }
   }
 
   return (
@@ -193,22 +228,50 @@ export function BiokitSidebar() {
                       )}
                     >
                       <FileText className='mr-2 h-4 w-4 flex-shrink-0' />
-                      <span className='truncate text-left'>{workflow.name}</span>
+                      {editingWorkflowId === workflow.id ? (
+                        <Input
+                          value={editingName}
+                          onChange={(e) => setEditingName(e.target.value)}
+                          onBlur={handleSaveEdit}
+                          onKeyDown={handleEditKeyDown}
+                          onClick={(e) => e.stopPropagation()}
+                          className='h-6 px-1 py-0 text-sm'
+                          autoFocus
+                        />
+                      ) : (
+                        <span 
+                          className='truncate text-left'
+                          onDoubleClick={(e) => {
+                            e.stopPropagation()
+                            handleStartEdit(workflow.id, workflow.name)
+                          }}
+                        >
+                          {workflow.name}
+                        </span>
+                      )}
                     </button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant='ghost'
                           size='icon'
+                          disabled={editingWorkflowId === workflow.id}
                           className={cn(
-                            'h-8 w-8 transition-opacity',
-                            hoveredWorkflowId === workflow.id ? 'opacity-100' : 'opacity-0'
+                            'h-8 w-8 transition-opacity focus:ring-0 focus:ring-offset-0',
+                            hoveredWorkflowId === workflow.id && editingWorkflowId !== workflow.id ? 'opacity-100' : 'opacity-0'
                           )}
                         >
                           <MoreHorizontal className='h-4 w-4' />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align='end' className='z-50'>
+                        <DropdownMenuItem
+                          onClick={() => handleStartEdit(workflow.id, workflow.name)}
+                          className='cursor-pointer'
+                        >
+                          <Edit className='mr-2 h-4 w-4' />
+                          Rename
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setWorkflowToDelete({ id: workflow.id, name: workflow.name })}
                           className='cursor-pointer text-destructive focus:text-destructive'
