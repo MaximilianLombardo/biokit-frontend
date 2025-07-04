@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils'
 import { useSidebarStore } from '@/stores/sidebar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { SidebarControl } from './components/sidebar-control/sidebar-control'
+import { BiokitSettingsModal } from './components/settings-modal/biokit-settings-modal'
 
 export function BiokitSidebar() {
   const router = useRouter()
@@ -39,6 +40,7 @@ export function BiokitSidebar() {
   const [hoveredWorkflowId, setHoveredWorkflowId] = useState<string | null>(null)
   const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
+  const [showSettings, setShowSettings] = useState(false)
 
   // Calculate if sidebar should be collapsed
   const isCollapsed = mode === 'collapsed' || (mode === 'hover' && !isHovered)
@@ -301,10 +303,7 @@ export function BiokitSidebar() {
                 size='icon'
                 variant='ghost'
                 className='h-8 w-8'
-                onClick={() => {
-                  // TODO: Implement settings modal
-                  console.log('Settings clicked')
-                }}
+                onClick={() => setShowSettings(true)}
               >
                 <Settings className='h-4 w-4' />
               </Button>
@@ -358,6 +357,12 @@ export function BiokitSidebar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Settings Modal */}
+      <BiokitSettingsModal 
+        open={showSettings} 
+        onOpenChange={setShowSettings} 
+      />
     </aside>
   )
 }
