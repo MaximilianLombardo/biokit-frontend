@@ -144,7 +144,7 @@ export function BiokitSidebar() {
       }}
     >
       {/* Header */}
-      <div className='flex h-14 items-center border-b px-3'>
+      <div className='flex h-[52px] items-center border-b px-3'>
         {isCollapsed ? (
           <div className='mx-auto text-lg font-bold'>B</div>
         ) : (

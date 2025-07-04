@@ -60,7 +60,7 @@ export function BiokitControlBar() {
     <div className="flex h-[52px] items-center justify-between border-b bg-background px-4">
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-medium">
-          {activeWorkflow?.name || 'BioKit Workflow Editor'}
+          {activeWorkflow?.name || ''}
         </h1>
       </div>
 
