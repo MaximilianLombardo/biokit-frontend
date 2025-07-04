@@ -10,7 +10,7 @@ import { useBiokitPermissions } from '../../hooks/use-biokit-permissions'
 import { getAllBlocks, getBlocksByCategory } from '@/blocks'
 import type { BlockCategory } from '@/blocks/types'
 import { useSidebarStore } from '@/stores/sidebar/store'
-import { useWorkflowRegistry } from '@/stores/workflows/registry/store'
+import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { ToolbarBlock } from './components/toolbar-block/toolbar-block'
 import LoopToolbarItem from './components/toolbar-loop-block/toolbar-loop-block'
 import ParallelToolbarItem from './components/toolbar-parallel-block/toolbar-parallel-block'
@@ -40,18 +40,13 @@ const ToolbarButton = React.memo<ToolbarButtonProps>(
 ToolbarButton.displayName = 'ToolbarButton'
 
 export const BiokitToolbar = React.memo(() => {
-  const params = useParams()
-  const workflowId = params?.id as string
-
-  // Get the workspace ID from the workflow registry
-  const { activeWorkspaceId, workflows } = useWorkflowRegistry()
+  // Get the active workflow from the registry
+  const { activeWorkflowId, workflows } = useLocalWorkflowRegistry()
 
   const currentWorkflow = useMemo(
-    () => (workflowId ? workflows[workflowId] : null),
-    [workflowId, workflows]
+    () => (activeWorkflowId ? workflows[activeWorkflowId] : null),
+    [activeWorkflowId, workflows]
   )
-
-  const workspaceId = currentWorkflow?.workspaceId || activeWorkspaceId
 
   const userPermissions = useBiokitPermissions()
 
@@ -103,7 +98,7 @@ export const BiokitToolbar = React.memo(() => {
     return (
       <ToolbarButton
         onClick={handleOpenToolbar}
-        className={`fixed transition-all duration-200 ${isSidebarCollapsed ? 'left-20' : 'left-64'} bottom-[18px] z-10 flex h-9 w-9 items-center justify-center rounded-lg border bg-background text-muted-foreground hover:bg-accent hover:text-foreground`}
+        className={`fixed transition-all duration-200 ${isSidebarCollapsed ? 'left-16' : 'left-64'} bottom-[18px] z-10 flex h-9 w-9 items-center justify-center rounded-lg border bg-background text-muted-foreground hover:bg-accent hover:text-foreground`}
         tooltipContent='Open Toolbar'
         tooltipSide='right'
       >

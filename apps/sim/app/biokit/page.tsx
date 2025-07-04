@@ -5,6 +5,7 @@ import 'reactflow/dist/style.css'
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { BiokitSidebar } from './components/sidebar/biokit-sidebar'
 
 // Dynamically import the simplified biokit workflow to avoid SSR issues
 const Workflow = dynamic(() => import('./biokit-workflow'), {
@@ -26,18 +27,21 @@ function BiokitWorkflowWrapper() {
 
 export default function BiokitPage() {
   return (
-    <div className="h-screen w-screen bg-background">
-      <Suspense fallback={
-        <div className="flex h-full items-center justify-center">
-          <p>Loading BioKit workflow editor...</p>
+    <div className="flex h-screen w-screen bg-background">
+      <TooltipProvider>
+        <BiokitSidebar />
+        <div className="flex-1">
+          <Suspense fallback={
+            <div className="flex h-full items-center justify-center">
+              <p>Loading BioKit workflow editor...</p>
+            </div>
+          }>
+            <ReactFlowProvider>
+              <BiokitWorkflowWrapper />
+            </ReactFlowProvider>
+          </Suspense>
         </div>
-      }>
-        <TooltipProvider>
-          <ReactFlowProvider>
-            <BiokitWorkflowWrapper />
-          </ReactFlowProvider>
-        </TooltipProvider>
-      </Suspense>
+      </TooltipProvider>
     </div>
   )
 }

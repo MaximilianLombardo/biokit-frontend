@@ -20,7 +20,8 @@ import { useNotificationStore } from './stores/notifications/store'
 import { useVariablesStore } from './stores/panel/variables/store'
 import { useGeneralStore } from './stores/settings/general/store'
 import { useSidebarStore } from './stores/sidebar/store'
-import { useWorkflowRegistry } from './stores/workflows/registry/store'
+import { useLocalWorkflowRegistry } from './stores/workflows/local-registry'
+import { useLocalWorkflowContent } from './stores/workflows/local-content'
 import { useWorkflowStore } from './stores/workflows/workflow/store'
 import { BiokitControlBar } from './components/control-bar/biokit-control-bar'
 import { ErrorBoundary } from './components/error/index'
@@ -73,51 +74,54 @@ const mockCollaborativeOps = {
 const WorkflowInner = () => {
   const { getIntersectingNodes, getEdges, getNodes, screenToFlowPosition, project } = useReactFlow()
   
-  // Mock workflow ID
-  const workflowId = 'biokit-demo'
+  // Get active workflow from registry
+  const { activeWorkflowId, workflows, createWorkflow, setActiveWorkflow } = useLocalWorkflowRegistry()
+  const { saveWorkflowContent, loadWorkflowContent } = useLocalWorkflowContent()
   
   // Initialize workflow state before using it
   const [isInitialized, setIsInitialized] = useState(false)
+  const [previousWorkflowId, setPreviousWorkflowId] = useState<string | null>(null)
   
   useEffect(() => {
-    const registry = useWorkflowRegistry.getState()
-    const workflowStore = useWorkflowStore.getState()
-    
-    // Initialize workflow in registry if needed
-    if (!registry.workflows[workflowId]) {
-      // Directly update the store state since we're in standalone mode
-      useWorkflowRegistry.setState((state) => ({
-        workflows: {
-          ...state.workflows,
-          [workflowId]: {
-            id: workflowId,
-            name: 'BioKit Demo Workflow',
-            description: 'Standalone workflow editor demo',
-            lastModified: new Date(),
-            color: '#3b82f6',
-            marketplaceData: null,
-            workspaceId: undefined,
-            folderId: null,
-          }
-        },
-        activeWorkflowId: workflowId,
-      }))
+    const initializeWorkflow = async () => {
+      // If no active workflow, create a default one
+      if (!activeWorkflowId) {
+        const newId = await createWorkflow({ name: 'My First Workflow' })
+        setActiveWorkflow(newId)
+        return
+      }
+      
+      // Save the previous workflow's content before switching
+      if (previousWorkflowId && previousWorkflowId !== activeWorkflowId) {
+        const currentState = useWorkflowStore.getState()
+        saveWorkflowContent(previousWorkflowId, {
+          blocks: currentState.blocks || {},
+          edges: currentState.edges || [],
+          loops: currentState.loops || {},
+          parallels: currentState.parallels || {},
+        })
+      }
+      
+      // Load the new workflow's content
+      const savedContent = loadWorkflowContent(activeWorkflowId)
+      if (savedContent) {
+        useWorkflowStore.setState(savedContent)
+      } else {
+        // Clear the workflow store for new workflows
+        useWorkflowStore.setState({
+          blocks: {},
+          edges: [],
+          loops: {},
+          parallels: {},
+        })
+      }
+      
+      setPreviousWorkflowId(activeWorkflowId)
+      setIsInitialized(true)
     }
     
-    // Initialize workflow state if needed
-    // The workflow store manages a single workflow at a time
-    if (Object.keys(workflowStore.blocks).length === 0) {
-      // Initialize empty workflow state
-      useWorkflowStore.setState({
-        blocks: {},
-        edges: [],
-        loops: {},
-        parallels: {},
-      })
-    }
-    
-    setIsInitialized(true)
-  }, [workflowId])
+    initializeWorkflow()
+  }, [activeWorkflowId, createWorkflow, setActiveWorkflow, saveWorkflowContent, loadWorkflowContent, previousWorkflowId])
   
   // Get stores - the workflow store manages a single workflow at a time
   const blocks = useWorkflowStore((state) => {
@@ -126,6 +130,41 @@ const WorkflowInner = () => {
     return Object.values(state.blocks || {})
   })
   const edges = useWorkflowStore((state) => isInitialized ? (state.edges || []) : [])
+  
+  // Auto-save workflow content when it changes
+  useEffect(() => {
+    if (!activeWorkflowId || !isInitialized) return
+    
+    const saveTimer = setTimeout(() => {
+      const currentState = useWorkflowStore.getState()
+      saveWorkflowContent(activeWorkflowId, {
+        blocks: currentState.blocks || {},
+        edges: currentState.edges || [],
+        loops: currentState.loops || {},
+        parallels: currentState.parallels || {},
+      })
+    }, 1000) // Save after 1 second of inactivity
+    
+    return () => clearTimeout(saveTimer)
+  }, [blocks, edges, activeWorkflowId, isInitialized, saveWorkflowContent])
+  
+  // Save workflow before unloading
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (activeWorkflowId && isInitialized) {
+        const currentState = useWorkflowStore.getState()
+        saveWorkflowContent(activeWorkflowId, {
+          blocks: currentState.blocks || {},
+          edges: currentState.edges || [],
+          loops: currentState.loops || {},
+          parallels: currentState.parallels || {},
+        })
+      }
+    }
+    
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [activeWorkflowId, isInitialized, saveWorkflowContent])
   
 
   // Listen for toolbar block click events
