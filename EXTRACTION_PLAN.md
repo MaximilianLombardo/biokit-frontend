@@ -110,9 +110,41 @@ interface BiokitWorkflowState {
 }
 ```
 
-### Phase 2: New Project Setup (Day 3)
+### Phase 2: Component Removal & Cleanup (Day 3)
 
-#### 2.1 Initialize BioKit Frontend
+#### 2.1 Components to Remove/Refactor
+
+During extraction, these components need to be identified and removed or refactored:
+
+**Authentication & User Management:**
+- All auth-related components (`useSession`, `useUser`, auth providers)
+- Login/signup pages and components
+- Session management code
+- User profile components
+
+**Multi-tenancy Features:**
+- Workspace components and workspace switching
+- Workspace permissions and sharing
+- Team management features
+
+**SaaS Features:**
+- Deployment/marketplace features
+- Billing components and subscription management
+- Usage tracking and limits
+- API key management for deployments
+
+**Collaboration Features:**
+- Real-time collaboration (Socket.IO)
+- User presence indicators
+- Collaborative editing features
+- Chat components and messaging
+
+**Integration Features:**
+- OAuth/credential selectors
+- Third-party service authentication
+- Credential storage and management
+
+#### 2.2 Initialize BioKit Frontend
 
 ```bash
 # Create new Next.js project
@@ -180,7 +212,9 @@ biokit-workflow-editor/
     └── use-node-execution.ts
 ```
 
-### Phase 3: Component Migration (Days 4-5)
+### Phase 3: New Project Setup (Day 4)
+
+### Phase 4: Component Migration (Days 5-6)
 
 #### 3.1 Core Components to Port
 
@@ -213,9 +247,9 @@ biokit-workflow-editor/
 - `tailwind.config.ts` - Tailwind configuration
 - `/app/globals.css` - Global styles and CSS variables
 
-### Phase 4: BioKit Nodes Implementation (Days 6-7)
+### Phase 5: BioKit Nodes Implementation (Days 7-8)
 
-#### 4.1 Node Registry
+#### 5.1 Node Registry
 
 ```typescript
 // lib/node-registry.ts
@@ -280,7 +314,7 @@ export const BIOKIT_NODES: BiokitNode[] = [
 ]
 ```
 
-#### 4.2 Node Components
+#### 5.2 Node Components
 
 ```typescript
 // components/nodes/base-node.tsx
@@ -340,9 +374,9 @@ export function BaseNode({ data, selected }: BaseNodeProps) {
 }
 ```
 
-### Phase 5: API Integration (Day 8)
+### Phase 6: API Integration (Day 9)
 
-#### 5.1 Workflow Serialization
+#### 6.1 Workflow Serialization
 
 ```typescript
 // lib/workflow-serializer.ts
@@ -367,7 +401,7 @@ export function serializeWorkflow(nodes: Node[], edges: Edge[]): BiokitWorkflow 
 }
 ```
 
-#### 5.2 API Client
+#### 6.2 API Client
 
 ```typescript
 // lib/api-client.ts
@@ -398,7 +432,7 @@ export async function getNodeOutput(nodeId: string) {
 }
 ```
 
-#### 5.3 Execution Hook
+#### 6.3 Execution Hook
 
 ```typescript
 // hooks/use-workflow-execution.ts
@@ -434,7 +468,7 @@ export function useWorkflowExecution() {
 }
 ```
 
-### Phase 6: Display Image Node (Day 9)
+### Phase 7: Display Image Node (Day 10)
 
 ```typescript
 // components/nodes/display-image-node.tsx
@@ -509,32 +543,41 @@ export function DisplayImageNode({ data, id }: NodeComponentProps) {
 - [ ] Create headless store
 - [ ] Verify editor works without auth
 
-### Phase 2: Setup ✅
+### Phase 2: Component Removal ✅
+- [ ] Identify auth-related components
+- [ ] Remove workspace components
+- [ ] Remove deployment/marketplace features
+- [ ] Remove collaboration features
+- [ ] Remove OAuth/credential selectors
+- [ ] Remove chat components
+- [ ] Remove billing components
+
+### Phase 3: Setup ✅
 - [ ] Initialize new Next.js project
 - [ ] Install core dependencies
 - [ ] Setup Shadcn UI
 - [ ] Create project structure
 
-### Phase 3: Migration ✅
+### Phase 4: Migration ✅
 - [ ] Port workflow canvas
 - [ ] Port node components
 - [ ] Port toolbar
 - [ ] Copy UI components and styles
 
-### Phase 4: BioKit Nodes ✅
+### Phase 5: BioKit Nodes ✅
 - [ ] Create node registry
 - [ ] Implement Input node
 - [ ] Implement Load Data node
 - [ ] Implement Scanpy UMAP node
 - [ ] Implement Display Image node
 
-### Phase 5: API ✅
+### Phase 6: API ✅
 - [ ] Implement serializer
 - [ ] Create API client
 - [ ] Add execution hook
 - [ ] Handle status updates
 
-### Phase 6: Polish ✅
+### Phase 7: Polish ✅
 - [ ] Add error handling
 - [ ] Implement image display
 - [ ] Add loading states

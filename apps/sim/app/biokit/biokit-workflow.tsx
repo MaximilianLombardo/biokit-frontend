@@ -105,7 +105,35 @@ const WorkflowInner = () => {
       // Load the new workflow's content
       const savedContent = loadWorkflowContent(activeWorkflowId)
       if (savedContent) {
-        useWorkflowStore.setState(savedContent)
+        // Ensure all blocks have valid configs
+        const blocksWithConfigs = Object.entries(savedContent.blocks).reduce((acc, [id, block]) => {
+          const blockType = block.data?.type || block.type
+          if (blockType !== 'loop' && blockType !== 'parallel' && blockType !== 'loopNode' && blockType !== 'parallelNode') {
+            const blockConfig = getBlock(blockType)
+            if (blockConfig) {
+              // Ensure the block has a valid config
+              acc[id] = {
+                ...block,
+                data: {
+                  ...block.data,
+                  config: blockConfig
+                }
+              }
+            } else {
+              // Skip blocks with invalid types
+              console.warn(`Skipping block with invalid type: ${blockType}`)
+            }
+          } else {
+            // Keep loop and parallel nodes as-is
+            acc[id] = block
+          }
+          return acc
+        }, {} as typeof savedContent.blocks)
+        
+        useWorkflowStore.setState({
+          ...savedContent,
+          blocks: blocksWithConfigs
+        })
       } else {
         // Clear the workflow store for new workflows
         useWorkflowStore.setState({
