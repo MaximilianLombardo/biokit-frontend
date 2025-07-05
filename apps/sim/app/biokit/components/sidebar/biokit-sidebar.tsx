@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { Edit, FileText, HelpCircle, LibraryBig, MoreHorizontal, Plus, ScrollText, Settings, Trash } from 'lucide-react'
+import { Edit, FileText, HelpCircle, LibraryBig, MoreHorizontal, PanelRight, Plus, ScrollText, Settings, Trash } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   AlertDialog,
@@ -26,6 +26,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { useSidebarStore } from '@/stores/sidebar/store'
+import { useToolbarStore } from '../../stores/toolbar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { SidebarControl } from './components/sidebar-control/sidebar-control'
 import { BiokitSettingsModal } from './components/settings-modal/biokit-settings-modal'
@@ -37,6 +38,7 @@ export function BiokitSidebar() {
   const pathname = usePathname()
   const { workflows, activeWorkflowId, createWorkflow, setActiveWorkflow, deleteWorkflow, updateWorkflow } = useLocalWorkflowRegistry()
   const { mode, isExpanded } = useSidebarStore()
+  const { toggleToolbar } = useToolbarStore()
   const [isHovered, setIsHovered] = useState(false)
   const [workflowToDelete, setWorkflowToDelete] = useState<{ id: string; name: string } | null>(null)
   const [hoveredWorkflowId, setHoveredWorkflowId] = useState<string | null>(null)
@@ -301,6 +303,20 @@ export function BiokitSidebar() {
           'flex items-center',
           isCollapsed ? 'flex-col space-y-2' : 'justify-between'
         )}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size='icon'
+                variant='ghost'
+                className='h-8 w-8'
+                onClick={toggleToolbar}
+              >
+                <PanelRight className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Toggle Toolbar</TooltipContent>
+          </Tooltip>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

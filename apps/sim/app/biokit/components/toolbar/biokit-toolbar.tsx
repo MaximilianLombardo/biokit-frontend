@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useMemo, useState } from 'react'
-import { PanelLeftClose, PanelRight, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -10,6 +10,7 @@ import { useBiokitPermissions } from '../../hooks/use-biokit-permissions'
 import { getAllBlocks, getBlocksByCategory } from '@/blocks'
 import type { BlockCategory } from '@/blocks/types'
 import { useSidebarStore } from '@/stores/sidebar/store'
+import { useToolbarStore } from '../../stores/toolbar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { ToolbarBlock } from './components/toolbar-block/toolbar-block'
 import LoopToolbarItem from './components/toolbar-loop-block/toolbar-loop-block'
@@ -53,15 +54,13 @@ export const BiokitToolbar = React.memo(() => {
   const [activeTab, setActiveTab] = useState<BlockCategory>('blocks')
   const [searchQuery, setSearchQuery] = useState('')
   const { mode, isExpanded } = useSidebarStore()
+  const isToolbarOpen = useToolbarStore((state) => state.isOpen)
 
   // In hover mode, act as if sidebar is always collapsed for layout purposes
   const isSidebarCollapsed = useMemo(
     () => (mode === 'expanded' ? !isExpanded : mode === 'collapsed' || mode === 'hover'),
     [mode, isExpanded]
   )
-
-  // State to track if toolbar is open - independent of sidebar state
-  const [isToolbarOpen, setIsToolbarOpen] = useState(true)
 
   const blocks = useMemo(() => {
     const filteredBlocks = !searchQuery.trim() ? getBlocksByCategory(activeTab) : getAllBlocks()
@@ -77,14 +76,6 @@ export const BiokitToolbar = React.memo(() => {
     })
   }, [searchQuery, activeTab])
 
-  const handleOpenToolbar = useCallback(() => {
-    setIsToolbarOpen(true)
-  }, [])
-
-  const handleCloseToolbar = useCallback(() => {
-    setIsToolbarOpen(false)
-  }, [])
-
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }, [])
@@ -93,19 +84,9 @@ export const BiokitToolbar = React.memo(() => {
     setActiveTab(tab)
   }, [])
 
-  // Show toolbar button when it's closed, regardless of sidebar state
+  // Don't render toolbar when closed (sidebar will show the open button)
   if (!isToolbarOpen) {
-    return (
-      <ToolbarButton
-        onClick={handleOpenToolbar}
-        className={`fixed transition-all duration-200 ${isSidebarCollapsed ? 'left-16' : 'left-64'} bottom-[18px] z-10 flex h-9 w-9 items-center justify-center rounded-lg border bg-background text-muted-foreground hover:bg-accent hover:text-foreground`}
-        tooltipContent='Open Toolbar'
-        tooltipSide='right'
-      >
-        <PanelRight className='h-5 w-5' />
-        <span className='sr-only'>Open Toolbar</span>
-      </ToolbarButton>
-    )
+    return null
   }
 
   return (
@@ -151,17 +132,6 @@ export const BiokitToolbar = React.memo(() => {
           </div>
         </ScrollArea>
 
-        <div className='absolute right-0 bottom-0 left-0 h-16 border-t bg-background'>
-          <ToolbarButton
-            onClick={handleCloseToolbar}
-            className='absolute right-4 bottom-[18px] flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground'
-            tooltipContent='Close Toolbar'
-            tooltipSide='left'
-          >
-            <PanelLeftClose className='h-5 w-5' />
-            <span className='sr-only'>Close Toolbar</span>
-          </ToolbarButton>
-        </div>
       </div>
     </div>
   )
