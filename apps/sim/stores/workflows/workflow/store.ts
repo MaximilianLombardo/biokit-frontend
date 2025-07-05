@@ -216,8 +216,8 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
 
         console.log('UpdateParentId called:', {
           blockId: id,
-          blockName: block.name,
-          blockType: block.type,
+          blockName: block.data?.name || block.name || 'Unnamed Block',
+          blockType: block.data?.type || block.type || 'unknown',
           newParentId: parentId,
           extent,
           currentParentId: block.data?.parentId,
@@ -272,7 +272,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
           set,
           get,
           newState,
-          parentId ? `Set parent for ${block.name}` : `Remove parent for ${block.name}`
+          parentId ? `Set parent for ${block.data?.name || block.name || 'Unnamed Block'}` : `Remove parent for ${block.data?.name || block.name || 'Unnamed Block'}`
         )
         get().updateLastSaved()
         // Note: Socket.IO handles real-time sync automatically
@@ -478,37 +478,64 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
           y: block.position.y + 20,
         }
 
+        // Handle both BioKit structure (block.data.name) and legacy structure (block.name)
+        const blockName = block.data?.name || block.name || 'Unnamed Block'
+        const blockType = block.data?.type || block.type || 'unknown'
+        
         // More efficient name handling
-        const match = block.name.match(/(.*?)(\d+)?$/)
+        const match = blockName.match(/(.*?)(\d+)?$/)
         const newName = match?.[2]
           ? `${match[1]}${Number.parseInt(match[2]) + 1}`
-          : `${block.name} 1`
+          : `${blockName} 1`
 
-        // Get merged state to capture current subblock values
-        const mergedBlock = mergeSubblockState(get().blocks, id)[id]
+        // Handle subBlocks - they might be in block.data.subBlocks or block.subBlocks
+        const blockSubBlocks = block.data?.subBlocks || block.subBlocks || {}
+        
+        // Only process subBlocks if they exist
+        let newSubBlocks = {}
+        if (Object.keys(blockSubBlocks).length > 0) {
+          // Get merged state to capture current subblock values
+          const mergedBlock = mergeSubblockState(get().blocks, id)[id]
+          const mergedSubBlocks = mergedBlock.data?.subBlocks || mergedBlock.subBlocks || {}
+          
+          // Create new subblocks with merged values
+          newSubBlocks = Object.entries(mergedSubBlocks).reduce(
+            (acc, [subId, subBlock]) => ({
+              ...acc,
+              [subId]: {
+                ...subBlock,
+                value: JSON.parse(JSON.stringify(subBlock.value)),
+              },
+            }),
+            {}
+          )
+        }
 
-        // Create new subblocks with merged values
-        const newSubBlocks = Object.entries(mergedBlock.subBlocks).reduce(
-          (acc, [subId, subBlock]) => ({
-            ...acc,
-            [subId]: {
-              ...subBlock,
-              value: JSON.parse(JSON.stringify(subBlock.value)),
-            },
-          }),
-          {}
-        )
+        // Create the new block with the correct structure
+        const newBlock = block.data ? {
+          // BioKit structure with data wrapper
+          ...block,
+          id: newId,
+          position: offsetPosition,
+          data: {
+            ...block.data,
+            id: newId,
+            name: newName,
+            subBlocks: newSubBlocks,
+          }
+        } : {
+          // Legacy structure without data wrapper
+          ...block,
+          id: newId,
+          name: newName,
+          position: offsetPosition,
+          subBlocks: newSubBlocks,
+        }
 
         const newState = {
           blocks: {
             ...get().blocks,
-            [newId]: {
-              ...block,
-              id: newId,
-              name: newName,
-              position: offsetPosition,
-              subBlocks: newSubBlocks,
-            },
+            [newId]: newBlock,
           },
           edges: [...get().edges],
           loops: get().generateLoopBlocks(),
@@ -532,19 +559,35 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
         }
 
         set(newState)
-        pushHistory(set, get, newState, `Duplicate ${block.type} block`)
+        pushHistory(set, get, newState, `Duplicate ${blockType} block`)
         get().updateLastSaved()
         // Note: Socket.IO handles real-time sync automatically
       },
 
       toggleBlockHandles: (id: string) => {
+        const block = get().blocks[id]
+        if (!block) return
+        
+        // Handle both BioKit structure and legacy structure
+        const currentHandles = block.data?.horizontalHandles ?? block.horizontalHandles ?? false
+        
+        const newBlock = block.data ? {
+          // BioKit structure with data wrapper
+          ...block,
+          data: {
+            ...block.data,
+            horizontalHandles: !currentHandles,
+          }
+        } : {
+          // Legacy structure without data wrapper
+          ...block,
+          horizontalHandles: !currentHandles,
+        }
+        
         const newState = {
           blocks: {
             ...get().blocks,
-            [id]: {
-              ...get().blocks[id],
-              horizontalHandles: !get().blocks[id].horizontalHandles,
-            },
+            [id]: newBlock,
           },
           edges: [...get().edges],
           loops: { ...get().loops },
@@ -559,14 +602,25 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
         const oldBlock = get().blocks[id]
         if (!oldBlock) return
 
+        // Handle both BioKit structure and legacy structure
+        const newBlock = oldBlock.data ? {
+          // BioKit structure with data wrapper
+          ...oldBlock,
+          data: {
+            ...oldBlock.data,
+            name,
+          }
+        } : {
+          // Legacy structure without data wrapper
+          ...oldBlock,
+          name,
+        }
+
         // Create a new state with the updated block name
         const newState = {
           blocks: {
             ...get().blocks,
-            [id]: {
-              ...oldBlock,
-              name,
-            },
+            [id]: newBlock,
           },
           edges: [...get().edges],
           loops: { ...get().loops },
@@ -676,7 +730,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
       updateLoopCount: (loopId: string, count: number) =>
         set((state) => {
           const block = state.blocks[loopId]
-          if (!block || block.type !== 'loop') return state
+          if (!block || (block.data?.type || block.type) !== 'loop') return state
 
           const newBlocks = {
             ...state.blocks,
@@ -699,7 +753,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
       updateLoopType: (loopId: string, loopType: 'for' | 'forEach') =>
         set((state) => {
           const block = state.blocks[loopId]
-          if (!block || block.type !== 'loop') return state
+          if (!block || (block.data?.type || block.type) !== 'loop') return state
 
           const newBlocks = {
             ...state.blocks,
@@ -722,7 +776,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
       updateLoopCollection: (loopId: string, collection: string) =>
         set((state) => {
           const block = state.blocks[loopId]
-          if (!block || block.type !== 'loop') return state
+          if (!block || (block.data?.type || block.type) !== 'loop') return state
 
           const newBlocks = {
             ...state.blocks,
@@ -832,7 +886,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
 
         // Check if there's an active webhook in the deployed state
         const starterBlock = Object.values(deployedState.blocks).find(
-          (block) => block.type === 'starter'
+          (block) => (block.data?.type || block.type) === 'starter'
         )
         if (starterBlock && starterBlock.subBlocks?.startWorkflow?.value === 'webhook') {
           set({ hasActiveWebhook: true })
@@ -897,7 +951,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
       // Parallel block methods implementation
       updateParallelCount: (parallelId: string, count: number) => {
         const block = get().blocks[parallelId]
-        if (!block || block.type !== 'parallel') return
+        if (!block || (block.data?.type || block.type) !== 'parallel') return
 
         const newBlocks = {
           ...get().blocks,
@@ -925,7 +979,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
 
       updateParallelCollection: (parallelId: string, collection: string) => {
         const block = get().blocks[parallelId]
-        if (!block || block.type !== 'parallel') return
+        if (!block || (block.data?.type || block.type) !== 'parallel') return
 
         const newBlocks = {
           ...get().blocks,
@@ -953,7 +1007,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
 
       updateParallelType: (parallelId: string, parallelType: 'count' | 'collection') => {
         const block = get().blocks[parallelId]
-        if (!block || block.type !== 'parallel') return
+        if (!block || (block.data?.type || block.type) !== 'parallel') return
 
         const newBlocks = {
           ...get().blocks,
