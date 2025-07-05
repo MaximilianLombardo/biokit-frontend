@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useBiokitPermissions } from '../../hooks/use-biokit-permissions'
 import { getAllBlocks, getBlocksByCategory } from '@/blocks'
 import type { BlockCategory } from '@/blocks/types'
-import { useSidebarStore } from '@/stores/sidebar/store'
+import { useSidebarStore } from '../../stores/sidebar/store'
 import { useToolbarStore } from '../../stores/toolbar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { ToolbarBlock } from './components/toolbar-block/toolbar-block'
@@ -53,14 +53,11 @@ export const BiokitToolbar = React.memo(() => {
 
   const [activeTab, setActiveTab] = useState<BlockCategory>('blocks')
   const [searchQuery, setSearchQuery] = useState('')
-  const { mode, isExpanded } = useSidebarStore()
+  const isSidebarOpen = useSidebarStore((state) => state.isOpen)
   const isToolbarOpen = useToolbarStore((state) => state.isOpen)
 
-  // In hover mode, act as if sidebar is always collapsed for layout purposes
-  const isSidebarCollapsed = useMemo(
-    () => (mode === 'expanded' ? !isExpanded : mode === 'collapsed' || mode === 'hover'),
-    [mode, isExpanded]
-  )
+  // Sidebar is collapsed when not open
+  const isSidebarCollapsed = !isSidebarOpen
 
   const blocks = useMemo(() => {
     const filteredBlocks = !searchQuery.trim() ? getBlocksByCategory(activeTab) : getAllBlocks()

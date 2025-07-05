@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { useSidebarStore } from '@/stores/sidebar/store'
+import { useSidebarStore } from '../../stores/sidebar/store'
 import { useToolbarStore } from '../../stores/toolbar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { SidebarControl } from './components/sidebar-control/sidebar-control'
@@ -37,9 +37,8 @@ export function BiokitSidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const { workflows, activeWorkflowId, createWorkflow, setActiveWorkflow, deleteWorkflow, updateWorkflow } = useLocalWorkflowRegistry()
-  const { mode, isExpanded } = useSidebarStore()
+  const isOpen = useSidebarStore((state) => state.isOpen)
   const { toggleToolbar } = useToolbarStore()
-  const [isHovered, setIsHovered] = useState(false)
   const [workflowToDelete, setWorkflowToDelete] = useState<{ id: string; name: string } | null>(null)
   const [hoveredWorkflowId, setHoveredWorkflowId] = useState<string | null>(null)
   const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null)
@@ -48,8 +47,13 @@ export function BiokitSidebar() {
   const [showLogs, setShowLogs] = useState(false)
   const [showKnowledge, setShowKnowledge] = useState(false)
 
-  // Calculate if sidebar should be collapsed
-  const isCollapsed = mode === 'collapsed' || (mode === 'hover' && !isHovered)
+  // Sidebar is collapsed when not open
+  const isCollapsed = !isOpen
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('Sidebar isOpen:', isOpen, 'isCollapsed:', isCollapsed)
+  }, [isOpen, isCollapsed])
 
   // Get workflows list
   const workflowsList = useMemo(() => {
@@ -137,19 +141,8 @@ export function BiokitSidebar() {
     <aside
       className={clsx(
         'fixed inset-y-0 left-0 z-10 flex flex-col border-r bg-background transition-all duration-200',
-        isCollapsed ? 'w-14' : 'w-60',
-        mode === 'hover' && 'hover:shadow-lg'
+        isCollapsed ? 'w-14' : 'w-60'
       )}
-      onMouseEnter={() => {
-        if (mode === 'hover') {
-          setIsHovered(true)
-        }
-      }}
-      onMouseLeave={() => {
-        if (mode === 'hover') {
-          setIsHovered(false)
-        }
-      }}
     >
       {/* Header */}
       <div className='flex h-[52px] items-center border-b px-3 pt-[21px] pb-0.5'>
