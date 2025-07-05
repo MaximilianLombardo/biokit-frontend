@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { Edit, FileText, HelpCircle, MoreHorizontal, Plus, Settings, Trash } from 'lucide-react'
+import { Edit, FileText, HelpCircle, LibraryBig, MoreHorizontal, Plus, ScrollText, Settings, Trash } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   AlertDialog,
@@ -297,6 +297,34 @@ export function BiokitSidebar() {
           'flex items-center',
           isCollapsed ? 'flex-col space-y-2' : 'justify-between'
         )}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size='icon'
+                variant='ghost'
+                className='h-8 w-8'
+                onClick={() => router.push('/biokit/logs')}
+              >
+                <ScrollText className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Logs</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size='icon'
+                variant='ghost'
+                className='h-8 w-8'
+                onClick={() => router.push('/biokit/knowledge')}
+              >
+                <LibraryBig className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Knowledge Base</TooltipContent>
+          </Tooltip>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
