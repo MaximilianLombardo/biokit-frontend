@@ -144,7 +144,8 @@ export function useBlockConnections(blockId: string) {
       }
 
       // Get the default output type from the block's outputs
-      const defaultOutputs: Field[] = Object.entries(sourceBlock.outputs || {}).map(([key]) => ({
+      const blockOutputs = sourceBlock.data?.config?.outputs || sourceBlock.outputs || {}
+      const defaultOutputs: Field[] = Object.entries(blockOutputs).map(([key]) => ({
         name: key,
         type: 'string',
       }))
@@ -154,9 +155,9 @@ export function useBlockConnections(blockId: string) {
 
       return {
         id: sourceBlock.id,
-        type: sourceBlock.type,
+        type: sourceBlock.data?.type || sourceBlock.type,
         outputType: outputFields.map((field: Field) => field.name),
-        name: sourceBlock.name,
+        name: sourceBlock.data?.name || sourceBlock.name || 'Unnamed Block',
         responseFormat,
       }
     })
@@ -186,7 +187,8 @@ export function useBlockConnections(blockId: string) {
       }
 
       // Get the default output type from the block's outputs
-      const defaultOutputs: Field[] = Object.entries(sourceBlock.outputs || {}).map(([key]) => ({
+      const blockOutputs = sourceBlock.data?.config?.outputs || sourceBlock.outputs || {}
+      const defaultOutputs: Field[] = Object.entries(blockOutputs).map(([key]) => ({
         name: key,
         type: 'string',
       }))
@@ -196,9 +198,9 @@ export function useBlockConnections(blockId: string) {
 
       return {
         id: sourceBlock.id,
-        type: sourceBlock.type,
+        type: sourceBlock.data?.type || sourceBlock.type,
         outputType: outputFields.map((field: Field) => field.name),
-        name: sourceBlock.name,
+        name: sourceBlock.data?.name || sourceBlock.name || 'Unnamed Block',
         responseFormat,
       }
     })

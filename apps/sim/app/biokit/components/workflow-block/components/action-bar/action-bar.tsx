@@ -16,6 +16,7 @@ export function ActionBar({ blockId, blockType, disabled = false }: ActionBarPro
   const toggleBlockEnabled = useWorkflowStore((state) => state.toggleBlockEnabled)
   const toggleBlockHandles = useWorkflowStore((state) => state.toggleBlockHandles)
   const duplicateBlock = useWorkflowStore((state) => state.duplicateBlock)
+  const removeBlock = useWorkflowStore((state) => state.removeBlock)
   const isEnabled = useWorkflowStore((state) => state.blocks[blockId]?.enabled ?? true)
   const horizontalHandles = useWorkflowStore(
     (state) => state.blocks[blockId]?.horizontalHandles ?? false
@@ -126,7 +127,7 @@ export function ActionBar({ blockId, blockType, disabled = false }: ActionBarPro
               size='sm'
               onClick={() => {
                 if (!disabled) {
-                  collaborativeRemoveBlock(blockId)
+                  removeBlock(blockId)
                 }
               }}
               className={cn(
