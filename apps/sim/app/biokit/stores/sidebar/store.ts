@@ -18,15 +18,11 @@ export const useSidebarStore = create<SidebarState>()(
       name: 'sidebar-state',
       version: 1,
       migrate: (persistedState: any, version: number) => {
-        console.log('Migrating sidebar state, version:', version, 'state:', persistedState)
-        
         // If there's an old mode property, migrate it
         if (persistedState.mode !== undefined) {
-          const migratedState = {
+          return {
             isOpen: persistedState.mode === 'expanded' || persistedState.mode === 'hover',
           }
-          console.log('Migrated state:', migratedState)
-          return migratedState
         }
         
         // If there's an old isExpanded property, use it

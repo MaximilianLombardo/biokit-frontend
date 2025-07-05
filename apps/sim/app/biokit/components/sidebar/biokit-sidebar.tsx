@@ -49,11 +49,6 @@ export function BiokitSidebar() {
 
   // Sidebar is collapsed when not open
   const isCollapsed = !isOpen
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('Sidebar isOpen:', isOpen, 'isCollapsed:', isCollapsed)
-  }, [isOpen, isCollapsed])
 
   // Get workflows list
   const workflowsList = useMemo(() => {
@@ -294,7 +289,7 @@ export function BiokitSidebar() {
       <div className='flex-shrink-0 border-t p-3 pb-6'>
         <div className={cn(
           'flex items-center',
-          isCollapsed ? 'flex-col space-y-2' : 'justify-between'
+          isCollapsed ? 'flex-col space-y-2' : 'flex-row-reverse justify-between'
         )}>
           <Tooltip>
             <TooltipTrigger asChild>
