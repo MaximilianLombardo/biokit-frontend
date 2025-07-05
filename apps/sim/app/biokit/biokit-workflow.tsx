@@ -554,6 +554,7 @@ const WorkflowInner = () => {
             }}
             connectionLineType={ConnectionLineType.SmoothStep}
             fitView
+            proOptions={{ hideAttribution: true }}
           >
             <Background />
           </ReactFlow>

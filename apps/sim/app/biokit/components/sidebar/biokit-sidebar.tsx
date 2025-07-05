@@ -150,7 +150,7 @@ export function BiokitSidebar() {
       }}
     >
       {/* Header */}
-      <div className='flex h-[52px] items-center border-b px-3'>
+      <div className='flex h-[52px] items-center border-b px-3 pt-[21px] pb-0.5'>
         {isCollapsed ? (
           <div className='mx-auto text-lg font-bold'>B</div>
         ) : (
@@ -199,7 +199,7 @@ export function BiokitSidebar() {
           )}
         </div>
 
-        <ScrollArea className='h-[calc(100vh-300px)]'>
+        <ScrollArea className='h-[calc(100vh-400px)]'>
           <div className='space-y-1'>
             {workflowsList.map((workflow) => (
               <div
@@ -296,7 +296,7 @@ export function BiokitSidebar() {
       </div>
 
       {/* Bottom Controls */}
-      <div className='flex-shrink-0 border-t p-3'>
+      <div className='flex-shrink-0 border-t p-3 pb-6'>
         <div className={cn(
           'flex items-center',
           isCollapsed ? 'flex-col space-y-2' : 'justify-between'
