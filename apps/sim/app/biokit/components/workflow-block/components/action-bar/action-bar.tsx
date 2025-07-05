@@ -17,9 +17,9 @@ export function ActionBar({ blockId, blockType, disabled = false }: ActionBarPro
   const toggleBlockHandles = useWorkflowStore((state) => state.toggleBlockHandles)
   const duplicateBlock = useWorkflowStore((state) => state.duplicateBlock)
   const removeBlock = useWorkflowStore((state) => state.removeBlock)
-  const isEnabled = useWorkflowStore((state) => state.blocks[blockId]?.enabled ?? true)
+  const isEnabled = useWorkflowStore((state) => state.blocks[blockId]?.data?.enabled ?? state.blocks[blockId]?.enabled ?? true)
   const horizontalHandles = useWorkflowStore(
-    (state) => state.blocks[blockId]?.horizontalHandles ?? false
+    (state) => state.blocks[blockId]?.data?.horizontalHandles ?? state.blocks[blockId]?.horizontalHandles ?? false
   )
 
   const isStarterBlock = blockType === 'starter'

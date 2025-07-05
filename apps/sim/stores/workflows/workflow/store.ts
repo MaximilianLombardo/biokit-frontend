@@ -450,13 +450,29 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
       },
 
       toggleBlockEnabled: (id: string) => {
+        const block = get().blocks[id]
+        if (!block) return
+        
+        // Handle both BioKit structure and legacy structure
+        const currentEnabled = block.data?.enabled ?? block.enabled ?? true
+        
+        const newBlock = block.data ? {
+          // BioKit structure with data wrapper
+          ...block,
+          data: {
+            ...block.data,
+            enabled: !currentEnabled,
+          }
+        } : {
+          // Legacy structure without data wrapper
+          ...block,
+          enabled: !currentEnabled,
+        }
+        
         const newState = {
           blocks: {
             ...get().blocks,
-            [id]: {
-              ...get().blocks[id],
-              enabled: !get().blocks[id].enabled,
-            },
+            [id]: newBlock,
           },
           edges: [...get().edges],
           loops: { ...get().loops },
@@ -901,13 +917,26 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
         const block = get().blocks[id]
         if (!block) return
 
+        // Handle both BioKit structure and legacy structure
+        const currentAdvancedMode = block.data?.advancedMode ?? block.advancedMode ?? false
+        
+        const newBlock = block.data ? {
+          // BioKit structure with data wrapper
+          ...block,
+          data: {
+            ...block.data,
+            advancedMode: !currentAdvancedMode,
+          }
+        } : {
+          // Legacy structure without data wrapper
+          ...block,
+          advancedMode: !currentAdvancedMode,
+        }
+
         const newState = {
           blocks: {
             ...get().blocks,
-            [id]: {
-              ...block,
-              advancedMode: !block.advancedMode,
-            },
+            [id]: newBlock,
           },
           edges: [...get().edges],
           loops: { ...get().loops },
@@ -922,7 +951,7 @@ export const useWorkflowStore = create<WorkflowStoreWithHistory>()(
           const blockValues = subBlockStore.workflowValues[activeWorkflowId]?.[id] || {}
           const updatedValues = { ...blockValues }
 
-          if (!block.advancedMode) {
+          if (!currentAdvancedMode) {
             // Switching TO advanced mode
             // Preserve systemPrompt and userPrompt, memories starts empty
             // No need to clear anything since advanced mode has all fields

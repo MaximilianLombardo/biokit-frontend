@@ -59,14 +59,14 @@ export function BiokitWorkflowBlock({ id, data }: NodeProps<WorkflowBlockProps>)
 
   // Workflow store selectors
   const lastUpdate = useWorkflowStore((state) => state.lastUpdate)
-  const isEnabled = useWorkflowStore((state) => state.blocks[id]?.enabled ?? true)
+  const isEnabled = useWorkflowStore((state) => state.blocks[id]?.data?.enabled ?? state.blocks[id]?.enabled ?? true)
   const horizontalHandles = useWorkflowStore(
-    (state) => state.blocks[id]?.horizontalHandles ?? false
+    (state) => state.blocks[id]?.data?.horizontalHandles ?? state.blocks[id]?.horizontalHandles ?? false
   )
-  const isWide = useWorkflowStore((state) => state.blocks[id]?.isWide ?? false)
-  const blockHeight = useWorkflowStore((state) => state.blocks[id]?.height ?? 0)
+  const isWide = useWorkflowStore((state) => state.blocks[id]?.data?.isWide ?? state.blocks[id]?.isWide ?? false)
+  const blockHeight = useWorkflowStore((state) => state.blocks[id]?.data?.height ?? state.blocks[id]?.height ?? 0)
   const hasActiveWebhook = useWorkflowStore((state) => state.hasActiveWebhook ?? false)
-  const blockAdvancedMode = useWorkflowStore((state) => state.blocks[id]?.advancedMode ?? false)
+  const blockAdvancedMode = useWorkflowStore((state) => state.blocks[id]?.data?.advancedMode ?? state.blocks[id]?.advancedMode ?? false)
   const toggleBlockAdvancedMode = useWorkflowStore((state) => state.toggleBlockAdvancedMode)
 
   // Workflow store actions
