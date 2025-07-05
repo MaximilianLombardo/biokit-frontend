@@ -31,7 +31,7 @@ export function BiokitSettingsModal({ open, onOpenChange }: BiokitSettingsModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='flex h-[70vh] flex-col gap-0 p-0 sm:max-w-[800px]' hideCloseButton>
+      <DialogContent className='flex h-[85vh] flex-col gap-0 p-0 sm:max-w-[1040px]' hideCloseButton>
         <DialogHeader className='border-b px-6 py-4'>
           <div className='flex items-center justify-between'>
             <DialogTitle className='font-medium text-lg'>Settings</DialogTitle>

@@ -29,6 +29,8 @@ import { useSidebarStore } from '@/stores/sidebar/store'
 import { useLocalWorkflowRegistry } from '../../stores/workflows/local-registry'
 import { SidebarControl } from './components/sidebar-control/sidebar-control'
 import { BiokitSettingsModal } from './components/settings-modal/biokit-settings-modal'
+import { BiokitLogsModal } from '../logs-modal/biokit-logs-modal'
+import { BiokitKnowledgeModal } from '../knowledge-modal/biokit-knowledge-modal'
 
 export function BiokitSidebar() {
   const router = useRouter()
@@ -41,6 +43,8 @@ export function BiokitSidebar() {
   const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [showSettings, setShowSettings] = useState(false)
+  const [showLogs, setShowLogs] = useState(false)
+  const [showKnowledge, setShowKnowledge] = useState(false)
 
   // Calculate if sidebar should be collapsed
   const isCollapsed = mode === 'collapsed' || (mode === 'hover' && !isHovered)
@@ -303,7 +307,7 @@ export function BiokitSidebar() {
                 size='icon'
                 variant='ghost'
                 className='h-8 w-8'
-                onClick={() => router.push('/biokit/logs')}
+                onClick={() => setShowLogs(true)}
               >
                 <ScrollText className='h-4 w-4' />
               </Button>
@@ -317,7 +321,7 @@ export function BiokitSidebar() {
                 size='icon'
                 variant='ghost'
                 className='h-8 w-8'
-                onClick={() => router.push('/biokit/knowledge')}
+                onClick={() => setShowKnowledge(true)}
               >
                 <LibraryBig className='h-4 w-4' />
               </Button>
@@ -390,6 +394,18 @@ export function BiokitSidebar() {
       <BiokitSettingsModal 
         open={showSettings} 
         onOpenChange={setShowSettings} 
+      />
+
+      {/* Logs Modal */}
+      <BiokitLogsModal 
+        open={showLogs} 
+        onOpenChange={setShowLogs} 
+      />
+
+      {/* Knowledge Modal */}
+      <BiokitKnowledgeModal 
+        open={showKnowledge} 
+        onOpenChange={setShowKnowledge} 
       />
     </aside>
   )
