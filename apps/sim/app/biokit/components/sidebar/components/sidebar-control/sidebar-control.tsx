@@ -12,7 +12,7 @@ export function SidebarControl() {
     <Button
       variant='ghost'
       size='icon'
-      className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-md p-0 text-muted-foreground hover:bg-accent/50'
+      className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-md p-0 text-muted-foreground hover:bg-accent/50 hover:scale-[1.2] hover:shadow-md transform transition-transform'
       onClick={toggle}
     >
       <PanelRight className='h-[18px] w-[18px] text-muted-foreground' />

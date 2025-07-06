@@ -88,7 +88,7 @@ export const BiokitToolbar = React.memo(() => {
 
   return (
     <div
-      className={`fixed transition-all duration-200 ${isSidebarCollapsed ? 'left-14' : 'left-60'} top-16 z-10 h-[calc(100vh-4rem)] w-60 border-r bg-background sm:block`}
+      className={`fixed transition-all duration-300 ${isSidebarCollapsed ? 'left-14' : 'left-60'} top-16 z-10 h-[calc(100vh-4rem)] w-60 border-r bg-background sm:block`}
     >
       <div className='flex h-full flex-col'>
         <div className='sticky top-0 z-20 bg-background px-4 pt-4 pb-1'>

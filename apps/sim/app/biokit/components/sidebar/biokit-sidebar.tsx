@@ -137,7 +137,7 @@ export function BiokitSidebar() {
   return (
     <aside
       className={clsx(
-        'fixed inset-y-0 left-0 z-10 flex flex-col border-r bg-background transition-all duration-200',
+        'fixed inset-y-0 left-0 z-10 flex flex-col border-r bg-background transition-all duration-300',
         isCollapsed ? 'w-14' : 'w-60'
       )}
     >
@@ -164,7 +164,7 @@ export function BiokitSidebar() {
                   <Button
                     size='icon'
                     variant='ghost'
-                    className='h-6 w-6'
+                    className='h-6 w-6 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                     onClick={handleCreateWorkflow}
                   >
                     <Plus className='h-4 w-4' />
@@ -180,7 +180,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={handleCreateWorkflow}
                 >
                   <Plus className='h-4 w-4' />
@@ -206,7 +206,7 @@ export function BiokitSidebar() {
                       <button
                         onClick={() => setActiveWorkflow(workflow.id)}
                         className={cn(
-                          'flex w-full items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent',
+                          'flex w-full items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:scale-[1.2] hover:shadow-md transform transition-transform',
                           activeWorkflowId === workflow.id && 'bg-accent',
                           'justify-center px-0'
                         )}
@@ -221,7 +221,7 @@ export function BiokitSidebar() {
                     <button
                       onClick={() => setActiveWorkflow(workflow.id)}
                       className={cn(
-                        'flex flex-1 items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent',
+                        'flex flex-1 items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:scale-110 hover:shadow-md transform transition-transform',
                         activeWorkflowId === workflow.id && 'bg-accent'
                       )}
                     >
@@ -321,7 +321,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={toggleToolbar}
                 >
                   <PanelRight className='h-4 w-4' />
@@ -348,7 +348,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={() => setShowLogs(true)}
                 >
                   <ScrollText className='h-4 w-4' />
@@ -375,7 +375,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={() => setShowKnowledge(true)}
                 >
                   <LibraryBig className='h-4 w-4' />
@@ -402,7 +402,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={() => setShowSettings(true)}
                 >
                   <Settings className='h-4 w-4' />
@@ -429,7 +429,7 @@ export function BiokitSidebar() {
                 <Button
                   size='icon'
                   variant='ghost'
-                  className='h-8 w-8'
+                  className='h-8 w-8 hover:scale-[1.2] hover:shadow-md transform transition-transform'
                   onClick={() => {
                     // TODO: Implement help modal
                     console.log('Help clicked')
