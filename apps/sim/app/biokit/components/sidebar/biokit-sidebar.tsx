@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { Edit, FileText, HelpCircle, LibraryBig, MoreHorizontal, PanelRight, Plus, ScrollText, Settings, Trash } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +47,7 @@ export function BiokitSidebar() {
   const [showSettings, setShowSettings] = useState(false)
   const [showLogs, setShowLogs] = useState(false)
   const [showKnowledge, setShowKnowledge] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   // Sidebar is collapsed when not open
   const isCollapsed = !isOpen
@@ -287,90 +289,179 @@ export function BiokitSidebar() {
 
       {/* Bottom Controls */}
       <div className='flex-shrink-0 border-t p-3 pb-6'>
-        <div className={cn(
-          'flex items-center',
-          isCollapsed ? 'flex-col space-y-2' : 'flex-row-reverse justify-between'
-        )}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='h-8 w-8'
-                onClick={toggleToolbar}
-              >
-                <PanelRight className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Toggle Toolbar</TooltipContent>
-          </Tooltip>
+        <motion.div 
+          className={cn(
+            'flex items-center',
+            isCollapsed ? 'flex-col space-y-2' : 'flex-row-reverse justify-between'
+          )}
+          layout={!shouldReduceMotion}
+          transition={{ 
+            duration: 0.3, 
+            ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier for smoother motion
+            layout: {
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1]
+            }
+          }}
+        >
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='h-8 w-8'
+                  onClick={toggleToolbar}
+                >
+                  <PanelRight className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Toggle Toolbar</TooltipContent>
+            </Tooltip>
+          </motion.div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='h-8 w-8'
-                onClick={() => setShowLogs(true)}
-              >
-                <ScrollText className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Logs</TooltipContent>
-          </Tooltip>
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0.05,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='h-8 w-8'
+                  onClick={() => setShowLogs(true)}
+                >
+                  <ScrollText className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Logs</TooltipContent>
+            </Tooltip>
+          </motion.div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='h-8 w-8'
-                onClick={() => setShowKnowledge(true)}
-              >
-                <LibraryBig className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Knowledge Base</TooltipContent>
-          </Tooltip>
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0.1,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='h-8 w-8'
+                  onClick={() => setShowKnowledge(true)}
+                >
+                  <LibraryBig className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Knowledge Base</TooltipContent>
+            </Tooltip>
+          </motion.div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='h-8 w-8'
-                onClick={() => setShowSettings(true)}
-              >
-                <Settings className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Settings</TooltipContent>
-          </Tooltip>
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0.15,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='h-8 w-8'
+                  onClick={() => setShowSettings(true)}
+                >
+                  <Settings className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Settings</TooltipContent>
+            </Tooltip>
+          </motion.div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='h-8 w-8'
-                onClick={() => {
-                  // TODO: Implement help modal
-                  console.log('Help clicked')
-                }}
-              >
-                <HelpCircle className='h-4 w-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Help</TooltipContent>
-          </Tooltip>
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0.2,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='h-8 w-8'
+                  onClick={() => {
+                    // TODO: Implement help modal
+                    console.log('Help clicked')
+                  }}
+                >
+                  <HelpCircle className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Help</TooltipContent>
+            </Tooltip>
+          </motion.div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarControl />
-            </TooltipTrigger>
-            <TooltipContent side={isCollapsed ? 'right' : 'top'}>Toggle sidebar</TooltipContent>
-          </Tooltip>
-        </div>
+          <motion.div 
+            layout={!shouldReduceMotion} 
+            transition={{ 
+              duration: 0.3, 
+              delay: 0.25,
+              ease: [0.4, 0, 0.2, 1],
+              layout: {
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarControl />
+              </TooltipTrigger>
+              <TooltipContent side={isCollapsed ? 'right' : 'top'}>Toggle sidebar</TooltipContent>
+            </Tooltip>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* Delete Confirmation Dialog */}
