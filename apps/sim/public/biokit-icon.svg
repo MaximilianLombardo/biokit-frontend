@@ -1,0 +1,18 @@
+<svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Circle - with thicker stroke -->
+  <circle cx="30" cy="30" r="28" stroke="#F7F2E8" stroke-width="2.5" fill="none"/>
+
+  <!-- Orange Circle (Bottom) -->
+  <circle cx="22" cy="35" r="12" fill="#FF1E2D"/>
+
+  <!-- Middle Circle - black with white outline -->
+  <circle cx="30" cy="22" r="11" fill="#0D0D0F"/>
+
+  <!-- White Circle -->
+  <circle cx="37" cy="35" r="7" fill="#F7F2E8"/>
+
+  <!-- All the outlines - thicker at 2.5px -->
+  <circle cx="22" cy="35" r="12" stroke="#F7F2E8" stroke-width="2.5" fill="none"/>
+  <circle cx="30" cy="22" r="11" stroke="#F7F2E8" stroke-width="2.5" fill="none"/>
+  <circle cx="37" cy="35" r="7" stroke="#F7F2E8" stroke-width="2.5" fill="none"/>
+</svg>

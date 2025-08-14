@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { Edit, FileText, HelpCircle, LibraryBig, MoreHorizontal, PanelRight, Plus, ScrollText, Settings, Trash } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import Image from 'next/image'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -142,11 +143,21 @@ export function BiokitSidebar() {
       )}
     >
       {/* Header */}
-      <div className='flex h-[52px] items-center border-b px-3 pt-[21px] pb-0.5'>
+      <div className='flex h-[60px] items-center justify-center border-b px-3'>
         {isCollapsed ? (
-          <div className='mx-auto text-lg font-bold'>B</div>
+          <Image 
+            src='/biokit-icon.svg' 
+            alt='BioKit Icon' 
+            width={32} 
+            height={32}
+          />
         ) : (
-          <h1 className='text-lg font-bold'>BioKit</h1>
+          <Image 
+            src='/biokit-logo.svg' 
+            alt='BioKit Logo' 
+            width={140} 
+            height={50}
+          />
         )}
       </div>
 
